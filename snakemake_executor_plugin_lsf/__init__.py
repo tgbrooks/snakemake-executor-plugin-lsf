@@ -229,7 +229,7 @@ class Executor(RemoteExecutor):
         #    # query remote middleware here
         fail_stati = ("SSUSP", "EXIT", "USUSP")
         # Cap sleeping time between querying the status of all active jobs:
-        max_sleep_time = 180
+        max_sleep_time = 15
 
         job_query_durations = []
 
@@ -314,7 +314,7 @@ class Executor(RemoteExecutor):
 
         if not any_finished:
             self.next_seconds_between_status_checks = min(
-                self.next_seconds_between_status_checks + 10, max_sleep_time
+                self.next_seconds_between_status_checks + 1, max_sleep_time
             )
         else:
             self.next_seconds_between_status_checks = None
