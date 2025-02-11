@@ -548,13 +548,18 @@ class Executor(RemoteExecutor):
             f"{lsf_config['LSF_CONFDIR']}/lsbatch/"
             f"{lsf_config['LSF_CLUSTER']}/configdir/lsb.params"
         )
-        with open(lsb_params_file, "r") as file:
-            for line in file:
-                if "=" in line and not line.strip().startswith("#"):
-                    key, value = line.strip().split("=", 1)
-                    if key.strip() == "DEFAULT_QUEUE":
-                        lsf_config["DEFAULT_QUEUE"] = value.split("#")[0].strip()
-                        break
+        try:
+            with open(lsb_params_file, "r") as file:
+                for line in file:
+                    if "=" in line and not line.strip().startswith("#"):
+                        key, value = line.strip().split("=", 1)
+                        if key.strip() == "DEFAULT_QUEUE":
+                            lsf_config["DEFAULT_QUEUE"] = value.split("#")[0].strip()
+                            break
+        except FileNotFoundError:
+            # In some clusters, this file is not available
+            # so the DEFAULT_QUEUE, if needed, will have to be supplied elsewhere
+            pass
 
         lsf_config["LSF_MEMFMT"] = os.environ.get(
             "SNAKEMAKE_LSF_MEMFMT", "percpu"
